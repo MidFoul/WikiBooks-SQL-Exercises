@@ -1,0 +1,87 @@
+----3
+---a
+
+ CREATE TABLE Pieces (
+  Code INTEGER PRIMARY KEY NOT NULL,
+  Name TEXT NOT NULL
+  );
+
+
+ CREATE TABLE Providers (
+  Code VARCHAR(40) 
+  PRIMARY KEY NOT NULL,  
+  Name TEXT NOT NULL 
+  );
+
+ CREATE TABLE Provides (
+  Piece INTEGER, 
+  FOREIGN KEY (Piece) REFERENCES Pieces(Code),
+  Provider VARCHAR(40), 
+  FOREIGN KEY (Provider) REFERENCES Providers(Code),  
+  Price INTEGER NOT NULL,
+  PRIMARY KEY(Piece, Provider) 
+  );
+----b
+
+ INSERT INTO Providers(Code, Name) VALUES('HAL','Clarke Enterprises');
+ INSERT INTO Providers(Code, Name) VALUES('RBT','Susan Calvin Corp.');
+ INSERT INTO Providers(Code, Name) VALUES('TNBC','Skellington Supplies');
+ 
+
+
+ INSERT INTO Pieces(Code, Name) VALUES(1,'Sprocket');
+ INSERT INTO Pieces(Code, Name) VALUES(2,'Screw');
+ INSERT INTO Pieces(Code, Name) VALUES(3,'Nut');
+ INSERT INTO Pieces(Code, Name) VALUES(4,'Bolt');
+ 
+
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(1,'HAL',10);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(1,'RBT',15);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(2,'HAL',20);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(2,'RBT',15);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(2,'TNBC',14);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(3,'RBT',50);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(3,'TNBC',45);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(4,'HAL',5);
+ INSERT INTO Provides(Piece, Provider, Price) VALUES(4,'RBT',7);
+
+
+--c.
+ SELECT Name FROM Pieces;
+--d.
+ SELECT * FROM Providers;
+--e.
+SELECT Piece, AVG(Price)
+FROM Provides
+GROUP BY Piece;
+--f
+SELECT Name
+FROM Providers 
+WHERE Code IN
+(SELECT Provider FROM Provides WHERE Piece = 1);
+--g.
+ SELECT Pieces.Name
+   FROM Pieces INNER JOIN Provides
+   ON Pieces.Code = Provides.Piece
+     AND Provides.Provider = 'HAL';
+--h.
+ SELECT Pieces.Name, Providers.Name, Price
+   FROM Pieces INNER JOIN Provides ON Pieces.Code = Piece
+               INNER JOIN Providers ON Providers.Code = Provider
+   WHERE Price =
+   (
+     SELECT MAX(Price) FROM Provides
+     WHERE Piece = Pieces.Code
+   );
+--i.
+INSERT INTO Provides 
+  VALUES (1, 'TNBC', 7);
+--j.
+ UPDATE Provides SET Price = Price + 1;
+--k.
+ DELETE FROM Provides
+   WHERE Provider = 'RBT'
+     AND Piece = 4;
+--l.
+ DELETE FROM Provides
+   WHERE Provider = 'RBT';
