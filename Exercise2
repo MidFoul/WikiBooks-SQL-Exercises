@@ -1,0 +1,139 @@
+-----2
+----a
+
+ CREATE TABLE Departments (
+   Code INTEGER PRIMARY KEY NOT NULL,
+   [Name] VARCHAR (255) NOT NULL ,
+   Budget REAL NOT NULL 
+ );
+ 
+
+ CREATE TABLE Employees (
+   SSN INTEGER PRIMARY KEY NOT NULL,
+   [Name] TEXT NOT NULL ,
+   LastName VARCHAR (255) NOT NULL ,
+   Department INTEGER NOT NULL , 
+   CONSTRAINT fk_Departments_Code FOREIGN KEY(Department) 
+   REFERENCES Departments(Code)
+ );
+
+
+---b
+INSERT INTO Departments(Code,[Name],Budget) VALUES(14,'IT',65000);
+INSERT INTO Departments(Code,Name,Budget) VALUES(37,'Accounting',15000);
+INSERT INTO Departments(Code,Name,Budget) VALUES(59,'Human Resources',240000);
+INSERT INTO Departments(Code,Name,Budget) VALUES(77,'Research',55000);
+
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('123234877','Michael','Rogers',14);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('152934485','Anand','Manikutty',14);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('222364883','Carol','Smith',37);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('326587417','Joe','Stevens',37);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('332154719','Mary-Anne','Foster',14);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('332569843','George','O''Donnell',77);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('546523478','John','Doe',59);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('631231482','David','Smith',77);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('654873219','Zacary','Efron',59);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('745685214','Eric','Goldsmith',59);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('845657245','Elizabeth','Doe',14);
+INSERT INTO Employees(SSN,Name,LastName,Department) VALUES('845657246','Kumar','Swamy',14);
+
+
+---c
+SELECT LastName 
+FROM Employees;
+
+
+---d.
+SELECT DISTINCT LastName 
+FROM Employees;
+---e.
+SELECT * 
+FROM Employees 
+WHERE LastName = 'Smith';
+---f.
+SELECT * 
+FROM Employees
+WHERE LastName IN ('Smith' , 'Doe');
+--g.
+SELECT * 
+FROM Employees 
+WHERE Department = 14;
+--h.
+SELECT * 
+FROM Employees
+WHERE Department IN (37,77);
+--i.
+SELECT * FROM Employees
+WHERE LastName LIKE 'S%';
+--j.
+SELECT SUM(Budget) 
+FROM Departments;
+--k.
+SELECT Department, COUNT(*)
+FROM Employees
+GROUP BY Department;
+--l.
+SELECT *
+FROM Employees E INNER JOIN Departments D
+ON E.Department = D.Code;
+--m.
+SELECT E.Name, LastName, D.Name AS DepartmentsName, Budget
+FROM Employees E INNER JOIN Departments D
+ON E.Department = D.Code;
+--n.
+SELECT Name, LastName FROM Employees
+WHERE Department IN
+(SELECT Code FROM Departments WHERE Budget > 60000);
+--o.
+SELECT *
+FROM Departments
+WHERE Budget >
+(
+    SELECT AVG(Budget)
+    FROM Departments
+  );
+--p.
+SELECT D.Name FROM Departments D
+WHERE 2 < 
+(
+   SELECT COUNT(*) 
+     FROM Employees
+     WHERE Department = D.Code
+);
+--q.
+SELECT Name, LastName 
+FROM Employees 
+WHERE Department IN (
+  SELECT Code 
+  FROM Departments 
+  WHERE Budget = (
+    SELECT TOP 1 Budget 
+    FROM Departments 
+    WHERE Budget IN (
+      SELECT DISTINCT TOP 2 Budget 
+      FROM Departments 
+     ORDER BY Budget ASC
+    ) 
+    ORDER BY Budget DESC
+  ))
+--r. 
+INSERT INTO Departments
+VALUES ( 11 , 'Quality Assurance' , 40000);
+--s.
+INSERT INTO Employees
+VALUES ( '847219811' , 'Mary' , 'Moore' , 11);
+--t.
+UPDATE Departments SET Budget = Budget * 0.9;
+--u.
+UPDATE Employees SET Department = 14 WHERE Department = 77;
+--v.
+DELETE FROM Employees WHERE Department = 14;
+--w.
+DELETE FROM Employees
+  WHERE Department IN
+  (
+    SELECT Code FROM Departments
+      WHERE Budget >= 60000
+  );
+--x.	
+DELETE FROM Employees;
